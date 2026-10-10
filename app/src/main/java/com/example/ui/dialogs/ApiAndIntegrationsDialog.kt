@@ -68,15 +68,15 @@ fun ApiAndIntegrationsDialog(
     // API state
     var asicRestApi by remember { mutableStateOf("http://192.168.1.101:4028/api/summary") }
     var web3RpcUrl by remember { mutableStateOf("https://eth.llamarpc.com") }
-    var hut8ApiKey by remember { mutableStateOf("hut8_live_sec_99a8b12f4c") }
+    var fleetApiKey by remember { mutableStateOf("hexa_live_sec_99a8b12f4c") }
 
     // WebSocket state
-    var stratumWsUrl by remember { mutableStateOf("wss://hut8.hexamine.pool:3334/stratum-v2") }
+    var stratumWsUrl by remember { mutableStateOf("wss://hexa.hexamine.pool:3334/stratum-v2") }
     var web3WssUrl by remember { mutableStateOf("wss://ethereum-rpc.publicnode.com") }
     var wsConnected by remember { mutableStateOf(true) }
 
     // Slack state
-    var slackWebhook by remember { mutableStateOf("https://hooks.slack.com/services/T08HUT8/B09MINE/hex99a8b1") }
+    var slackWebhook by remember { mutableStateOf("https://hooks.slack.com/services/T08HEXA/B09MINE/hex99a8b1") }
     var slackChannel by remember { mutableStateOf("#hexamine-mining-ops") }
 
     Dialog(onDismissRequest = onDismiss) {
@@ -176,10 +176,10 @@ fun ApiAndIntegrationsDialog(
                                 )
                             )
 
-                            Text("HUT 8 ENTERPRISE API KEY:", color = Color(0x66FFAA00), fontSize = 8.sp, fontFamily = FontFamily.Monospace)
+                            Text("HEXA ENTERPRISE API KEY:", color = Color(0x66FFAA00), fontSize = 8.sp, fontFamily = FontFamily.Monospace)
                             OutlinedTextField(
-                                value = hut8ApiKey,
-                                onValueChange = { hut8ApiKey = it },
+                                value = fleetApiKey,
+                                onValueChange = { fleetApiKey = it },
                                 modifier = Modifier.fillMaxWidth(),
                                 colors = OutlinedTextFieldDefaults.colors(
                                     focusedBorderColor = HexGold,

@@ -54,11 +54,11 @@ fun ConnectInfraDialog(
 ) {
     if (!isOpen) return
 
-    var rigName by remember { mutableStateOf("HUT8-S21-Gamma") }
+    var rigName by remember { mutableStateOf("HEXA-S21-Gamma") }
     var selectedModel by remember { mutableStateOf("Antminer S21 (200 TH/s)") }
     var ipAddress by remember { mutableStateOf("192.168.1.115") }
     var stratumPort by remember { mutableStateOf("3333") }
-    var workerName by remember { mutableStateOf("hut8_operator.rig_gamma") }
+    var workerName by remember { mutableStateOf("hexa_operator.rig_gamma") }
 
     Dialog(onDismissRequest = onDismiss) {
         Box(
@@ -108,7 +108,7 @@ fun ConnectInfraDialog(
                 }
 
                 Text(
-                    text = "Provision Hut 8 Stratum V1/V2 ASIC Rig or Subnet Discovery",
+                    text = "Provision HEXA Stratum V1/V2 ASIC Rig or Subnet Discovery",
                     color = Color(0x99FFAA00),
                     fontSize = 10.sp,
                     fontFamily = FontFamily.Monospace,

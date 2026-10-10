@@ -83,7 +83,7 @@ fun LogsScreen(
                     letterSpacing = 1.sp
                 )
                 Text(
-                    text = "REAL-TIME STRATUM, WEB3, & ASIC HARDWARE TELEMETRY",
+                    text = "SIMULATED STRATUM, WEB3 & ASIC TELEMETRY",
                     color = Color(0x99FFAA00),
                     fontSize = 9.sp,
                     fontFamily = FontFamily.Monospace

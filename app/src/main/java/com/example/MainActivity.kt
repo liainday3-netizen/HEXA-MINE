@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ui.HexamineViewModel
 import com.example.ui.components.HeaderBar
+import com.example.ui.components.SimulatedBanner
 import com.example.ui.components.NavigationTabBar
 import com.example.ui.dialogs.AdvancedAuthDialog
 import com.example.ui.dialogs.ApiAndIntegrationsDialog
@@ -106,12 +107,15 @@ fun HexamineApp(
                 .padding(innerPadding)
                 .background(Color(0xFF050810))
         ) {
+            // Simulated-mode banner (visible on every screen)
+            SimulatedBanner()
+
             // Header Bar
             HeaderBar(
-                isHut8Mode = kpis.isHut8Mode,
+                isFleetMode = kpis.isFleetMode,
                 isCurtailmentActive = kpis.isCurtailmentActive,
                 walletAddress = web3Wallet.address,
-                onToggleHut8Curtailment = { viewModel.toggleHut8Curtailment() },
+                onToggleFleetCurtailment = { viewModel.toggleFleetCurtailment() },
                 onOpenConnectInfra = { isConnectInfraOpen = true },
                 onOpenAdvancedAuth = {
                     viewModel.requestAdvancedAuth(
@@ -151,8 +155,8 @@ fun HexamineApp(
                         onNavigateToWeb3 = { viewModel.setTab("web3") },
                         onNavigateToPayouts = { viewModel.setTab("payouts") },
                         onTriggerPayout = { viewModel.triggerManualPayoutInUsdt() },
-                        onTriggerAllocation = { viewModel.triggerHashPowerAllocationOnChain("Hut 8 Pool", kpis.fleetHashrateTh) },
-                        onToggleCurtailment = { viewModel.toggleHut8Curtailment() },
+                        onTriggerAllocation = { viewModel.triggerHashPowerAllocationOnChain("HEXA Pool", kpis.fleetHashrateTh) },
+                        onToggleCurtailment = { viewModel.toggleFleetCurtailment() },
                         marketState = marketState,
                         onNavigateToBreakerCore = { viewModel.setTab("breaker_core") },
                         onRefreshMarketFeed = { viewModel.refreshMarketFeed() }

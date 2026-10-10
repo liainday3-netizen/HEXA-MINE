@@ -110,7 +110,7 @@ fun DashboardScreen(
                     letterSpacing = 1.sp
                 )
                 Text(
-                    text = "REAL-TIME MINING OVERVIEW · HUT 8 FRAMEWORK · EVM INTEGRATED",
+                    text = "SIMULATED MINING OVERVIEW · DEMO DATA · EVM TESTNET",
                     color = Color(0x99FFAA00),
                     fontSize = 9.sp,
                     fontFamily = FontFamily.Monospace
@@ -162,7 +162,7 @@ fun DashboardScreen(
                         }
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = "REAL-TIME SPOT ORACLE",
+                            text = "SPOT PRICE (COINBASE, READ-ONLY)",
                             color = Color(0xFF0052FF),
                             fontSize = 9.sp,
                             fontFamily = FontFamily.Monospace,
@@ -442,7 +442,7 @@ fun DashboardScreen(
                     Spacer(modifier = Modifier.width(8.dp))
                     Column {
                         Text(
-                            text = "HUT 8 GRID CURTAILMENT PROTOCOL ACTIVE",
+                            text = "HEXA GRID CURTAILMENT PROTOCOL ACTIVE",
                             color = HexRed,
                             fontSize = 11.sp,
                             fontFamily = FontFamily.Monospace,
@@ -516,7 +516,7 @@ fun DashboardScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "HASHRATE TELEMETRY (REAL-PATH 24H)",
+                        text = "HASHRATE TELEMETRY (SIMULATED 24H)",
                         color = Color(0x99FFAA00),
                         fontSize = 10.sp,
                         fontFamily = FontFamily.Monospace,
@@ -661,7 +661,7 @@ fun DashboardScreen(
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "REAL-PATH STREAM",
+                        text = "SIMULATED STREAM",
                         color = HexTeal,
                         fontSize = 8.sp,
                         fontFamily = FontFamily.Monospace

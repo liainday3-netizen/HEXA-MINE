@@ -117,7 +117,7 @@ fun Web3Screen(
                 .horizontalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            Web3Manager.SUPPORTED_NETWORKS.forEach { net ->
+            Web3Manager.availableNetworks(com.example.config.AppMode.isSimulated.value).forEach { net ->
                 val isCur = net.id == activeNetwork.id
                 Box(
                     modifier = Modifier
@@ -332,7 +332,7 @@ fun Web3Screen(
                                 "ALLOCATE_HASH_POWER",
                                 SolidityContracts.MINING_PROTOCOL_ADDRESS,
                                 "allocateHashPower(bytes32 poolId, uint256 targetHashrateTh)",
-                                "Target: Hut 8 Pool, 1007.5 TH/s"
+                                "Target: HEXA Pool, 1007.5 TH/s"
                             )
                         },
                         modifier = Modifier.fillMaxWidth(),

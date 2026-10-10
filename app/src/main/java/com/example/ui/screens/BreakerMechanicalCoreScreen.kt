@@ -190,7 +190,7 @@ fun BreakerMechanicalCoreScreen(
                         }
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = "SPOT ORACLE · REAL-TIME STREAM",
+                            text = "SPOT PRICE · COINBASE READ-ONLY",
                             color = Color(0xFF0052FF),
                             fontSize = 9.sp,
                             fontFamily = FontFamily.Monospace,
@@ -597,7 +597,7 @@ fun BreakerMechanicalCoreScreen(
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text(
-                    text = "BREAKER PROCESS · REAL VALUE EXTRACTION",
+                    text = "BREAKER PROCESS · SIMULATED",
                     color = HexGold,
                     fontSize = 10.sp,
                     fontFamily = FontFamily.Monospace,
