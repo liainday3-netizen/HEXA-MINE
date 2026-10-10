@@ -12,7 +12,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
@@ -49,7 +48,7 @@ data class MarketFeedState(
     val usdt: MarketPrice = MarketPrice("USDT/USD", "Tether USD", 1.0001, 0.01, 1.0005, 0.9998, 45200000000.0),
     val hexa: MarketPrice = MarketPrice("HEXA/USD", "Hexamine Breaker", 4.88, 5.24, 5.12, 4.45, 12500000.0),
     val coinbase: CoinbaseMarketDetails = CoinbaseMarketDetails(),
-    val isLiveConnected: Boolean = true,
+    val isLiveConnected: Boolean = false,
     val activeSource: String = "COINBASE (OFFICIAL API)", // COINBASE (OFFICIAL API), BINANCE PRO, CHAINLINK ORACLE
     val pingLatencyMs: Long = 42,
     val lastSyncTimestamp: Long = System.currentTimeMillis(),
@@ -121,8 +120,7 @@ object MarketDataFeedEngine {
                 if (resp.isSuccessful) {
                     val body = resp.body?.string()
                     if (!body.isNullOrBlank()) {
-                        val amountStr = JSONObject(body).getJSONObject("data").getString("amount")
-                        spotBtc = amountStr.toDoubleOrNull() ?: spotBtc
+                        spotBtc = PriceParsing.parseCoinbaseAmount(body) ?: spotBtc
                     }
                 }
             }
@@ -138,7 +136,7 @@ object MarketDataFeedEngine {
                     if (resp.isSuccessful) {
                         val b = resp.body?.string()
                         if (!b.isNullOrBlank()) {
-                            buyBtc = JSONObject(b).getJSONObject("data").getString("amount").toDoubleOrNull() ?: buyBtc
+                            buyBtc = PriceParsing.parseCoinbaseAmount(b) ?: buyBtc
                         }
                     }
                 }
@@ -150,7 +148,7 @@ object MarketDataFeedEngine {
                     if (resp.isSuccessful) {
                         val b = resp.body?.string()
                         if (!b.isNullOrBlank()) {
-                            sellBtc = JSONObject(b).getJSONObject("data").getString("amount").toDoubleOrNull() ?: sellBtc
+                            sellBtc = PriceParsing.parseCoinbaseAmount(b) ?: sellBtc
                         }
                     }
                 }
@@ -168,7 +166,7 @@ object MarketDataFeedEngine {
                     if (resp.isSuccessful) {
                         val b = resp.body?.string()
                         if (!b.isNullOrBlank()) {
-                            spotEth = JSONObject(b).getJSONObject("data").getString("amount").toDoubleOrNull() ?: spotEth
+                            spotEth = PriceParsing.parseCoinbaseAmount(b) ?: spotEth
                         }
                     }
                 }
@@ -216,19 +214,18 @@ object MarketDataFeedEngine {
                     if (resp.isSuccessful) {
                         val bodyStr = resp.body?.string()
                         if (!bodyStr.isNullOrBlank()) {
-                            val json = JSONObject(bodyStr)
-                            val lastPrice = json.getDouble("lastPrice")
-                            val changePct = json.getDouble("priceChangePercent")
-                            btcFetched = MarketPrice(
-                                symbol = "BTC/USDT",
-                                name = "Bitcoin",
-                                priceUsd = lastPrice,
-                                change24hPct = changePct,
-                                high24h = json.getDouble("highPrice"),
-                                low24h = json.getDouble("lowPrice"),
-                                volume24h = json.getDouble("quoteVolume"),
-                                lastUpdated = System.currentTimeMillis()
-                            )
+                            PriceParsing.parseBinanceTicker(bodyStr)?.let { tk ->
+                                btcFetched = MarketPrice(
+                                    symbol = "BTC/USDT",
+                                    name = "Bitcoin",
+                                    priceUsd = tk.lastPrice,
+                                    change24hPct = tk.changePct,
+                                    high24h = tk.high,
+                                    low24h = tk.low,
+                                    volume24h = tk.quoteVolume,
+                                    lastUpdated = System.currentTimeMillis()
+                                )
+                            }
                         }
                     }
                 }
@@ -281,7 +278,7 @@ object MarketDataFeedEngine {
             eth = currentEth,
             hexa = updatedHexa,
             coinbase = cbDetails,
-            isLiveConnected = true,
+            isLiveConnected = btcFetched != null,
             activeSource = "COINBASE (OFFICIAL API)",
             pingLatencyMs = latency,
             lastSyncTimestamp = System.currentTimeMillis(),

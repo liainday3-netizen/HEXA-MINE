@@ -15,9 +15,9 @@ data class StratumPacket(
 )
 
 data class StratumState(
-    val connectedPool: String = "Hut 8 Stratum Node (stratum+tcp://hut8.hexamine.pool:3333)",
+    val connectedPool: String = "HEXA Stratum Node (stratum+tcp://hexa.hexamine.pool:3333)",
     val protocolVersion: String = "STRATUM_V2",
-    val authorizedWorker: String = "hut8_hexamine.rig_master",
+    val authorizedWorker: String = "hexa_hexamine.rig_master",
     val currentDifficulty: Int = 16384,
     val acceptedSharesCount: Long = 18420,
     val rejectedSharesCount: Long = 14,
@@ -30,8 +30,8 @@ object StratumEngine {
     private val _packetFlow = MutableSharedFlow<StratumPacket>(replay = 50)
     val packetFlow = _packetFlow.asSharedFlow()
 
-    fun createSubscribePacket(agentName: String = "hexamine-hut8/3.2"): StratumPacket {
-        val json = """{"id":1,"method":"mining.subscribe","params":["$agentName",null,"hut8.hexamine.pool",3333]}"""
+    fun createSubscribePacket(agentName: String = "hexamine-hexa/3.2"): StratumPacket {
+        val json = """{"id":1,"method":"mining.subscribe","params":["$agentName",null,"hexa.hexamine.pool",3333]}"""
         return StratumPacket(direction = "SEND", rawJson = json, method = "mining.subscribe", latencyMs = 12)
     }
 
@@ -45,8 +45,13 @@ object StratumEngine {
         return StratumPacket(direction = "RECV", rawJson = json, method = "mining.notify", latencyMs = 21)
     }
 
-    fun createSubmitPacket(worker: String, jobId: String, nonce: String): StratumPacket {
-        val json = """{"id":${Random.nextInt(10, 9999)},"method":"mining.submit","params":["$worker","$jobId","00000001","65a0b12f","$nonce"]}"""
+    fun createSubmitPacket(
+        worker: String,
+        jobId: String,
+        nonce: String,
+        id: Int = Random.nextInt(10, 9999)
+    ): StratumPacket {
+        val json = """{"id":$id,"method":"mining.submit","params":["$worker","$jobId","00000001","65a0b12f","$nonce"]}"""
         return StratumPacket(direction = "SEND", rawJson = json, method = "mining.submit", latencyMs = 19)
     }
 

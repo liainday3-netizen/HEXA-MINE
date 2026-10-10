@@ -13,7 +13,7 @@ pragma solidity ^0.8.20;
 
 /**
  * @title HexamineMiningProtocol
- * @dev Web3 Mining Operations Protocol with Hut 8 Stratum V1/V2 Hash Power Allocation,
+ * @dev Web3 Mining Operations Protocol with HEXA Stratum V1/V2 Hash Power Allocation,
  *      Proof-of-Share Validation, and Post-Quantum Dilithium Verification.
  */
 interface IERC20 {
@@ -317,10 +317,10 @@ contract HexamineGatedTokenVault {
             claimed: false
         });
 
-        // Gate 2: Hut 8 Industrial Scale (5,000 TH/s target)
+        // Gate 2: HEXA Industrial Scale (5,000 TH/s target)
         gates[2] = TokenGate({
             gateId: 2,
-            gateName: "HUT 8 INDUSTRIAL EXPANSION GATE",
+            gateName: "HEXA INDUSTRIAL EXPANSION GATE",
             totalAllocation: 150000 * 1e18,
             requiredHashrateTh: 5000,
             requiredCumulativeShares: 80000,
