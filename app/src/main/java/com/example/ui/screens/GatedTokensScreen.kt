@@ -133,10 +133,10 @@ fun GatedTokensScreen(
             onClaim = { onClaimGate(1, 50000.0) }
         )
 
-        // Gate 2: Hut 8 Industrial Expansion (LOCKED)
+        // Gate 2: HEXA Industrial Expansion (LOCKED)
         GateCard(
             gateNumber = 2,
-            gateName = "GATE 2: HUT 8 INDUSTRIAL EXPANSION",
+            gateName = "GATE 2: HEXA INDUSTRIAL EXPANSION",
             allocation = "150,000 \$HEXA",
             isUnlocked = false,
             criteria = listOf(
