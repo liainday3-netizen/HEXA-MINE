@@ -1005,7 +1005,7 @@ fun SeedBackupDialog(
                 }
 
                 Text(
-                    text = "NEVER SHARE YOUR 12-WORD PHRASE WITH ANYONE. IT CONTROLS REAL VALUE AND BREAKER ASSETS.",
+                    text = "SIMULATED WALLET: THESE ARE NOT REAL KEYS. NEVER SEND FUNDS HERE AND NEVER ENTER A REAL SEED PHRASE IN THIS APP.",
                     color = HexRed,
                     fontSize = 8.sp,
                     fontFamily = FontFamily.Monospace,
