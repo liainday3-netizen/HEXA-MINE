@@ -1,5 +1,6 @@
 package com.example.web3
 
+import com.example.config.AppMode
 import com.example.quantum.QuantumSecurityEngine
 import java.security.MessageDigest
 import kotlin.random.Random
@@ -12,28 +13,31 @@ data class Web3Network(
     val currency: String,
     val blockExplorer: String,
     val blockHeight: Long = 21458920,
-    val gasPriceGwei: Double = 16.5
+    val gasPriceGwei: Double = 16.5,
+    val isTestnet: Boolean = false
 )
 
+const val PLACEHOLDER_ADDRESS = "0x0000000000000000000000000000000000000000"
+
+// All balances below are SIMULATED placeholders. They are not read from any chain.
 data class Web3Wallet(
-    val address: String = "0x63FaC7182281D59c60e32E69dC8Fea920215D3AA",
+    val address: String = PLACEHOLDER_ADDRESS,
     val usdtBalance: Double = 1482.50,
     val ethBalance: Double = 1.845,
     val wbtcBalance: Double = 0.1420,
     val hexaBalance: Double = 25000.0,
-    val isConnected: Boolean = true,
+    val isConnected: Boolean = false,
     val postQuantumAddress: String = "0xPQ9F18AC74BD821EEF0910AA37284A5961BC4271"
 )
 
 data class InAppWalletData(
-    val address: String = "0x63FaC7182281D59c60e32E69dC8Fea920215D3AA",
-    val privateKey: String = "0x4a8f9c2d1e0b573a69dc84fe02157a39b4f2c018a7d369e5f1b20489c71a3d02",
-    val mnemonic: List<String> = listOf(
-        "cyber", "breaker", "matrix", "quantum", "vault", "flame",
-        "orbit", "mining", "strata", "pulse", "neon", "shield"
-    ),
-    val isBackedUp: Boolean = true,
-    val isLinkedForUsdtPayouts: Boolean = true,
+    // No key material is ever hard-coded. Keys produced by generateNewInAppWallet() are
+    // SIMULATED (hash-derived, not secp256k1) and must never receive real funds.
+    val address: String = PLACEHOLDER_ADDRESS,
+    val privateKey: String = "",
+    val mnemonic: List<String> = emptyList(),
+    val isBackedUp: Boolean = false,
+    val isLinkedForUsdtPayouts: Boolean = false,
     val walletName: String = "Breaker Primary Vault",
     val postQuantumKeyId: String = "DILITHIUM5-BRK-9921"
 )
@@ -56,9 +60,15 @@ object Web3Manager {
         Web3Network("eth_mainnet", "Ethereum Mainnet", 1, "https://eth.llamarpc.com", "ETH", "https://etherscan.io", 21458920, 18.2),
         Web3Network("arbitrum", "Arbitrum One", 42161, "https://arb1.arbitrum.io/rpc", "ETH", "https://arbiscan.io", 280911440, 0.15),
         Web3Network("base", "Base L2", 8453, "https://mainnet.base.org", "ETH", "https://basescan.org", 24190820, 0.08),
-        Web3Network("sepolia", "Sepolia Testnet", 11155111, "https://rpc.sepolia.org", "SepoliaETH", "https://sepolia.etherscan.io", 7421900, 2.5),
-        Web3Network("hut8_subnet", "Hut 8 Enterprise EVM", 8888, "https://rpc.hut8.hexamine.network", "HUT8", "https://explorer.hut8.network", 894100, 0.01)
+        Web3Network("sepolia", "Sepolia Testnet", 11155111, "https://rpc.sepolia.org", "SepoliaETH", "https://sepolia.etherscan.io", 7421900, 2.5, isTestnet = true)
     )
+
+    /** Sepolia testnet is the default network. */
+    val DEFAULT_NETWORK: Web3Network = SUPPORTED_NETWORKS.first { it.id == "sepolia" }
+
+    /** Mainnets are only offered when simulation is switched off. */
+    fun availableNetworks(simulated: Boolean): List<Web3Network> =
+        if (simulated) SUPPORTED_NETWORKS.filter { it.isTestnet } else SUPPORTED_NETWORKS
 
     private val MNEMONIC_DICTIONARY = listOf(
         "matrix", "breaker", "quantum", "entropy", "stratum", "solidity",
@@ -85,7 +95,11 @@ object Web3Manager {
         )
     }
 
+    /** Seed phrase / private-key import is disabled while simulated mode is on. */
+    fun isImportAllowed(): Boolean = !AppMode.isSimulated.value
+
     fun importInAppWallet(input: String): InAppWalletData {
+        check(isImportAllowed()) { "Seed/private-key import is disabled in simulated mode" }
         val clean = input.trim()
         val words = clean.split("\\s+".toRegex())
         val (mnemonic, privKey, address) = if (words.size >= 12) {

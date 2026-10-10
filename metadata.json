@@ -1,6 +1,6 @@
 {
   "name": "HEXAMINE",
-  "description": "HEXAMINE — Web3 Mining Operations Framework featuring the BREAKER mining process, Stratum protocol, Hut 8 fleet management, Solidity smart contracts, and automated USDT payouts.",
+  "description": "HEXAMINE — Web3 Mining Operations Framework featuring the BREAKER mining process, Stratum protocol, HEXA fleet management, Solidity smart contracts, and automated USDT payouts.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

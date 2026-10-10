@@ -77,7 +77,7 @@ fun RigsScreen(
                     letterSpacing = 1.sp
                 )
                 Text(
-                    text = "${rigs.size} INDUSTRIAL ASICS · HUT 8 TELEMETRY MONITORED",
+                    text = "${rigs.size} INDUSTRIAL ASICS · HEXA TELEMETRY MONITORED",
                     color = Color(0x99FFAA00),
                     fontSize = 9.sp,
                     fontFamily = FontFamily.Monospace
