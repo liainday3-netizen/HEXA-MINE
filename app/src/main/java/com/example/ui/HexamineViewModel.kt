@@ -10,6 +10,8 @@ import com.example.data.LogEntity
 import com.example.data.PayoutEntity
 import com.example.data.PoolEntity
 import com.example.data.RigEntity
+import com.example.config.AppMode
+import com.example.mining.MiningMath
 import com.example.model.SolidityContracts
 import com.example.quantum.QuantumSecurityEngine
 import com.example.quantum.QuantumTelemetry
@@ -40,7 +42,7 @@ data class OperationsKpis(
     val efficiencyJPerTh: Double = 19.65,
     val earnedUsdt24h: Double = 238.45,
     val earnedBtc24h: Double = 0.00251,
-    val isHut8Mode: Boolean = true,
+    val isFleetMode: Boolean = true,
     val isCurtailmentActive: Boolean = false,
     val electricityRateKwh: Double = 0.045,
     val netDailyProfitUsd: Double = 217.06
@@ -81,7 +83,7 @@ class HexamineViewModel(application: Application) : AndroidViewModel(application
     private val _inAppWallet = MutableStateFlow(InAppWalletData())
     val inAppWallet: StateFlow<InAppWalletData> = _inAppWallet.asStateFlow()
 
-    private val _activeNetwork = MutableStateFlow(Web3Manager.SUPPORTED_NETWORKS[0])
+    private val _activeNetwork = MutableStateFlow(Web3Manager.DEFAULT_NETWORK)
     val activeNetwork: StateFlow<Web3Network> = _activeNetwork.asStateFlow()
 
     private val _stratumState = MutableStateFlow(StratumState())
@@ -135,6 +137,10 @@ class HexamineViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun selectNetwork(network: Web3Network) {
+        if (AppMode.isSimulated.value && !network.isTestnet) {
+            _toastMessage.value = "Mainnets are disabled in simulated mode"
+            return
+        }
         _activeNetwork.value = network
         viewModelScope.launch {
             dao.insertLog(
@@ -152,32 +158,32 @@ class HexamineViewModel(application: Application) : AndroidViewModel(application
     private suspend fun seedInitialDataIfEmpty() {
         // Seed default rigs if empty
         val defaultRigs = listOf(
-            RigEntity("rig-01", "HUT8-S21-Alpha", "Antminer S21", "192.168.1.101", 200.0, 3500, 61, 5600, "ONLINE", "Hut 8 Stratum Pool", 4890, 3, "NORMAL"),
-            RigEntity("rig-02", "HUT8-S21-Beta", "Antminer S21", "192.168.1.102", 198.5, 3480, 63, 5700, "ONLINE", "Hut 8 Stratum Pool", 4810, 5, "NORMAL"),
-            RigEntity("rig-03", "HUT8-S19-Gamma", "Antminer S19 Pro+", "192.168.1.103", 122.0, 3050, 68, 6100, "ONLINE", "Hut 8 Stratum Pool", 3120, 4, "NORMAL"),
-            RigEntity("rig-04", "HUT8-M50-Delta", "Whatsminer M50S+", "192.168.1.104", 136.0, 3260, 65, 5900, "ONLINE", "Hut 8 Stratum Pool", 3350, 2, "NORMAL"),
-            RigEntity("rig-05", "HUT8-A14-Epsilon", "Avalon A1466", "192.168.1.105", 150.0, 3230, 71, 6300, "WARNING", "Hut 8 Stratum Pool", 3620, 8, "OVERCLOCK"),
-            RigEntity("rig-06", "HUT8-S21-Zeta", "Antminer S21", "192.168.1.106", 201.0, 3510, 59, 5400, "ONLINE", "Hut 8 Stratum Pool", 4940, 2, "NORMAL")
+            RigEntity("rig-01", "HEXA-S21-Alpha", "Antminer S21", "192.168.1.101", 200.0, 3500, 61, 5600, "ONLINE", "HEXA Stratum Pool", 4890, 3, "NORMAL"),
+            RigEntity("rig-02", "HEXA-S21-Beta", "Antminer S21", "192.168.1.102", 198.5, 3480, 63, 5700, "ONLINE", "HEXA Stratum Pool", 4810, 5, "NORMAL"),
+            RigEntity("rig-03", "HEXA-S19-Gamma", "Antminer S19 Pro+", "192.168.1.103", 122.0, 3050, 68, 6100, "ONLINE", "HEXA Stratum Pool", 3120, 4, "NORMAL"),
+            RigEntity("rig-04", "HEXA-M50-Delta", "Whatsminer M50S+", "192.168.1.104", 136.0, 3260, 65, 5900, "ONLINE", "HEXA Stratum Pool", 3350, 2, "NORMAL"),
+            RigEntity("rig-05", "HEXA-A14-Epsilon", "Avalon A1466", "192.168.1.105", 150.0, 3230, 71, 6300, "WARNING", "HEXA Stratum Pool", 3620, 8, "OVERCLOCK"),
+            RigEntity("rig-06", "HEXA-S21-Zeta", "Antminer S21", "192.168.1.106", 201.0, 3510, 59, 5400, "ONLINE", "HEXA Stratum Pool", 4940, 2, "NORMAL")
         )
         dao.insertRigs(defaultRigs)
 
         val defaultPools = listOf(
-            PoolEntity("pool-01", "Hut 8 Stratum Node", "stratum+tcp://hut8.hexamine.pool", 3333, "hut8_operator.rig_master", 0.8, true, "STRATUM_V2"),
-            PoolEntity("pool-02", "Foundry USA Pool", "stratum+tcp://stratum.foundryusa.com", 3333, "hut8_foundry.main", 1.0, false, "STRATUM_V1"),
+            PoolEntity("pool-01", "HEXA Stratum Node", "stratum+tcp://hexa.hexamine.pool", 3333, "hexa_operator.rig_master", 0.8, true, "STRATUM_V2"),
+            PoolEntity("pool-02", "Foundry USA Pool", "stratum+tcp://stratum.foundryusa.com", 3333, "hexa_foundry.main", 1.0, false, "STRATUM_V1"),
             PoolEntity("pool-03", "AntPool Global", "stratum+tcp://stratum.antpool.com", 3333, "hexamine.ant01", 1.5, false, "STRATUM_V1"),
             PoolEntity("pool-04", "Local Stratum V2 Node", "stratum+tcp://127.0.0.1", 34255, "hexamine_local", 0.0, false, "STRATUM_V2")
         )
         dao.insertPools(defaultPools)
 
         val defaultPayouts = listOf(
-            PayoutEntity("pay-01", "0x8f4c2919aa74620b7218d6e32e8419ba603938d1", 21458890, 142.50, "USDT", "0x63FaC7182281D59c60e32E69dC8Fea920215D3AA", System.currentTimeMillis() - 7200000, "CONFIRMED", 15.2, "executeAutomatedPayoutBatch"),
-            PayoutEntity("pay-02", "0x3a19b84bbcf219d9018420bfed8924016a5090fa", 21458410, 128.80, "USDT", "0x63FaC7182281D59c60e32E69dC8Fea920215D3AA", System.currentTimeMillis() - 28800000, "CONFIRMED", 16.8, "executeAutomatedPayoutBatch"),
-            PayoutEntity("pay-03", "0x712a88e144a95b8209cbff610934027781a912cc", 21457920, 95.00, "USDT", "0x63FaC7182281D59c60e32E69dC8Fea920215D3AA", System.currentTimeMillis() - 86400000, "CONFIRMED", 14.9, "executeAutomatedPayoutBatch")
+            PayoutEntity("pay-01", "0x8f4c2919aa74620b7218d6e32e8419ba603938d1", 21458890, 142.50, "USDT", com.example.web3.PLACEHOLDER_ADDRESS, System.currentTimeMillis() - 7200000, "SIMULATED", 15.2, "executeAutomatedPayoutBatch"),
+            PayoutEntity("pay-02", "0x3a19b84bbcf219d9018420bfed8924016a5090fa", 21458410, 128.80, "USDT", com.example.web3.PLACEHOLDER_ADDRESS, System.currentTimeMillis() - 28800000, "SIMULATED", 16.8, "executeAutomatedPayoutBatch"),
+            PayoutEntity("pay-03", "0x712a88e144a95b8209cbff610934027781a912cc", 21457920, 95.00, "USDT", com.example.web3.PLACEHOLDER_ADDRESS, System.currentTimeMillis() - 86400000, "SIMULATED", 14.9, "executeAutomatedPayoutBatch")
         )
         defaultPayouts.forEach { dao.insertPayout(it) }
 
         val defaultLogs = listOf(
-            LogEntity(timestamp = System.currentTimeMillis() - 120000, level = "OK", category = "STRATUM", message = "Noise protocol handshake complete with stratum+tcp://hut8.hexamine.pool:3333"),
+            LogEntity(timestamp = System.currentTimeMillis() - 120000, level = "OK", category = "STRATUM", message = "Noise protocol handshake complete with stratum+tcp://hexa.hexamine.pool:3333"),
             LogEntity(timestamp = System.currentTimeMillis() - 90000, level = "INFO", category = "WEB3", message = "EVM Protocol Contract bound: ${SolidityContracts.MINING_PROTOCOL_ADDRESS}"),
             LogEntity(timestamp = System.currentTimeMillis() - 60000, level = "OK", category = "QUANTUM", message = "CRYSTALS-Dilithium5 Post-Quantum Hybrid Signature engine operational (256-bit Grover defense)"),
             LogEntity(timestamp = System.currentTimeMillis() - 30000, level = "INFO", category = "PAYOUT", message = "Automated USDT Payout engine active: Threshold = 10.00 USDT via Vault")
@@ -193,24 +199,10 @@ class HexamineViewModel(application: Application) : AndroidViewModel(application
                 val currentRigs = rigs.value
                 if (currentRigs.isNotEmpty()) {
                     val activeRigs = currentRigs.filter { it.status != "OFFLINE" }
-                    val totalHash = activeRigs.sumOf {
-                        when (it.profile) {
-                            "OVERCLOCK" -> it.hashrateTh * 1.15
-                            "ECO" -> it.hashrateTh * 0.85
-                            "CURTAILED" -> it.hashrateTh * 0.20
-                            else -> it.hashrateTh
-                        }
-                    }
-                    val totalPower = activeRigs.sumOf {
-                        when (it.profile) {
-                            "OVERCLOCK" -> (it.powerWatts * 1.18).toInt()
-                            "ECO" -> (it.powerWatts * 0.75).toInt()
-                            "CURTAILED" -> (it.powerWatts * 0.22).toInt()
-                            else -> it.powerWatts
-                        }
-                    }
+                    val totalHash = activeRigs.sumOf { MiningMath.effectiveHashrateTh(it.hashrateTh, it.profile) }
+                    val totalPower = activeRigs.sumOf { MiningMath.effectivePowerWatts(it.powerWatts, it.profile) }
                     val powerKw = totalPower / 1000.0
-                    val eff = if (totalHash > 0) totalPower / totalHash else 0.0
+                    val eff = MiningMath.efficiencyJPerTh(totalPower, totalHash)
 
                     // Increment random rig share
                     val randomRig = activeRigs.randomOrNull()
@@ -234,8 +226,8 @@ class HexamineViewModel(application: Application) : AndroidViewModel(application
                             pingMs = Random.nextInt(18, 26)
                         )
 
-                        // Add small payout accrual in USDT
-                        val accruedUsdt = (accepted * 0.045)
+                        // Add small SIMULATED payout accrual in USDT
+                        val accruedUsdt = MiningMath.accruedUsdt(accepted)
                         _kpis.value = _kpis.value.copy(
                             fleetHashrateTh = totalHash + Random.nextDouble(-2.0, 2.0),
                             activeRigsCount = activeRigs.size,
@@ -243,7 +235,7 @@ class HexamineViewModel(application: Application) : AndroidViewModel(application
                             totalPowerKw = powerKw,
                             efficiencyJPerTh = eff,
                             earnedUsdt24h = _kpis.value.earnedUsdt24h + accruedUsdt,
-                            earnedBtc24h = _kpis.value.earnedBtc24h + (accruedUsdt / 95000.0)
+                            earnedBtc24h = _kpis.value.earnedBtc24h + MiningMath.usdtToBtc(accruedUsdt, 95000.0)
                         )
                     }
 
@@ -265,7 +257,7 @@ class HexamineViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun toggleHut8Curtailment() {
+    fun toggleFleetCurtailment() {
         val newState = !_kpis.value.isCurtailmentActive
         _kpis.value = _kpis.value.copy(isCurtailmentActive = newState)
         viewModelScope.launch {
@@ -273,8 +265,8 @@ class HexamineViewModel(application: Application) : AndroidViewModel(application
                 it.copy(profile = if (newState) "CURTAILED" else "NORMAL")
             }
             dao.insertRigs(updatedRigs)
-            val msg = if (newState) "HUT 8 GRID CURTAILMENT ACTIVATED (-80% Power draw during peak power tariff)"
-            else "HUT 8 NORMAL DISPATCH RESUMED (Full fleet operational)"
+            val msg = if (newState) "HEXA GRID CURTAILMENT ACTIVATED (-80% Power draw during peak power tariff)"
+            else "HEXA NORMAL DISPATCH RESUMED (Full fleet operational)"
             dao.insertLog(
                 LogEntity(
                     timestamp = System.currentTimeMillis(),
@@ -334,7 +326,7 @@ class HexamineViewModel(application: Application) : AndroidViewModel(application
             val id = "rig-${System.currentTimeMillis() % 10000}"
             val newRig = RigEntity(
                 id = id,
-                name = name.ifBlank { "HUT8-ASIC-${id.takeLast(4)}" },
+                name = name.ifBlank { "HEXA-ASIC-${id.takeLast(4)}" },
                 model = model.ifBlank { "Antminer S21" },
                 ipAddress = ip.ifBlank { "192.168.1.${Random.nextInt(110, 220)}" },
                 hashrateTh = hashrate.takeIf { it > 0 } ?: 200.0,
@@ -342,7 +334,7 @@ class HexamineViewModel(application: Application) : AndroidViewModel(application
                 tempC = Random.nextInt(58, 66),
                 fanRpm = Random.nextInt(5200, 5800),
                 status = "ONLINE",
-                activePool = "Hut 8 Stratum Pool",
+                activePool = "HEXA Stratum Pool",
                 sharesAccepted = 0,
                 sharesRejected = 0,
                 profile = "NORMAL"
@@ -426,7 +418,7 @@ class HexamineViewModel(application: Application) : AndroidViewModel(application
                         asset = "USDT",
                         recipientAddress = _web3Wallet.value.address,
                         timestamp = System.currentTimeMillis(),
-                        status = "CONFIRMED",
+                        status = "SIMULATED",
                         gasUsedGwei = payload.gasEstimateGwei,
                         contractMethod = "executeAutomatedPayoutBatch"
                     )
@@ -483,7 +475,7 @@ class HexamineViewModel(application: Application) : AndroidViewModel(application
                             asset = "HEXA",
                             recipientAddress = _web3Wallet.value.address,
                             timestamp = System.currentTimeMillis(),
-                            status = "CONFIRMED",
+                            status = "SIMULATED",
                             gasUsedGwei = payload.gasEstimateGwei,
                             contractMethod = "claimGatedTokens"
                         )
@@ -550,8 +542,8 @@ class HexamineViewModel(application: Application) : AndroidViewModel(application
             val seedUsdt = 250.0
             val newPool = PoolEntity(
                 id = newPoolId,
-                name = "Hut 8 AI Autonomous Yield Pool",
-                url = "stratum+tcp://hut8.ai-yield.hexamine.pool",
+                name = "HEXA AI Autonomous Yield Pool",
+                url = "stratum+tcp://hexa.ai-yield.hexamine.pool",
                 port = 3333,
                 workerName = "ai_sentinel.auto01",
                 feePercent = 0.0,
@@ -576,7 +568,7 @@ class HexamineViewModel(application: Application) : AndroidViewModel(application
                     asset = "USDT",
                     recipientAddress = SolidityContracts.POOL_FACTORY_ADDRESS,
                     timestamp = System.currentTimeMillis(),
-                    status = "CONFIRMED",
+                    status = "SIMULATED",
                     gasUsedGwei = 16.4,
                     contractMethod = "createAndFundAutonomousPool"
                 )
@@ -630,7 +622,7 @@ class HexamineViewModel(application: Application) : AndroidViewModel(application
                     asset = toAsset,
                     recipientAddress = currentWallet.address,
                     timestamp = System.currentTimeMillis(),
-                    status = "CONFIRMED",
+                    status = "SIMULATED",
                     gasUsedGwei = 19.8,
                     contractMethod = "dexSwapUniswapV3Router"
                 )
@@ -694,6 +686,10 @@ class HexamineViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun importInAppWallet(input: String) {
+        if (!Web3Manager.isImportAllowed()) {
+            _toastMessage.value = "Seed/private-key import is disabled in simulated mode. Never paste a real seed phrase here."
+            return
+        }
         val imported = Web3Manager.importInAppWallet(input)
         _inAppWallet.value = imported
         _web3Wallet.value = _web3Wallet.value.copy(
@@ -783,7 +779,7 @@ class HexamineViewModel(application: Application) : AndroidViewModel(application
                     asset = asset,
                     recipientAddress = recipient,
                     timestamp = System.currentTimeMillis(),
-                    status = "CONFIRMED",
+                    status = "SIMULATED",
                     gasUsedGwei = gasPriceGwei,
                     contractMethod = "transferERC20"
                 )

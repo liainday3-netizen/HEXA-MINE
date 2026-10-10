@@ -52,10 +52,10 @@ import com.example.ui.theme.HexamineCard
 
 @Composable
 fun HeaderBar(
-    isHut8Mode: Boolean,
+    isFleetMode: Boolean,
     isCurtailmentActive: Boolean,
     walletAddress: String,
-    onToggleHut8Curtailment: () -> Unit,
+    onToggleFleetCurtailment: () -> Unit,
     onOpenConnectInfra: () -> Unit,
     onOpenAdvancedAuth: () -> Unit,
     onOpenWalletConnect: () -> Unit,
@@ -156,17 +156,17 @@ fun HeaderBar(
                     }
                 }
 
-                // Hut 8 Mode / Curtailment Toggle Button
+                // HEXA Mode / Curtailment Toggle Button
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(4.dp))
                         .background(if (isCurtailmentActive) HexRed.copy(alpha = 0.2f) else HexTeal.copy(alpha = 0.15f))
                         .border(1.dp, if (isCurtailmentActive) HexRed else HexTeal, RoundedCornerShape(4.dp))
-                        .clickable { onToggleHut8Curtailment() }
+                        .clickable { onToggleFleetCurtailment() }
                         .padding(horizontal = 8.dp, vertical = 6.dp)
                 ) {
                     Text(
-                        text = if (isCurtailmentActive) "CURTAILED -80%" else "⬡ HUT 8 DISPATCH",
+                        text = if (isCurtailmentActive) "CURTAILED -80%" else "⬡ HEXA DISPATCH",
                         color = if (isCurtailmentActive) HexRed else HexTeal,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
@@ -203,7 +203,7 @@ fun HeaderBar(
             // Pool Pill
             StatusPill(
                 color = HexTeal,
-                text = "POOL: HUT 8 SECURE",
+                text = "POOL: HEXA SECURE",
                 alpha = 1f
             )
 
