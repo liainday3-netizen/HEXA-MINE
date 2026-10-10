@@ -311,7 +311,7 @@ fun AiSentinelScreen(
 
                 val actions = listOf(
                     "Rig-05 Avalon A1466: Detected thermal elevation (71°C) -> Increased Fan Fan-2 +400 RPM, downclocked hashboard-3 -25MHz. Temp normalized to 65°C.",
-                    "Stratum Protocol: Detected 2 stale shares on backup pool -> Re-routed hash connection to primary Hut 8 Stratum V2 endpoint.",
+                    "Stratum Protocol: Detected 2 stale shares on backup pool -> Re-routed hash connection to primary HEXA Stratum V2 endpoint.",
                     "Web3 Payout Vault: EVM gas dipped to 14.2 Gwei -> Triggered automated batch release of 142.50 USDT to miners, saving \$18.40 in gas fees.",
                     "Quantum Entropy Engine: Seeded new QRNG entropy digest 0x9f18ac... into Dilithium-5 verification contract.",
                     "Fleet Rebalance: Overclocked Rig-01 (+15%) during off-peak midnight electricity tariff (\$0.028/kWh)."
